@@ -9,25 +9,18 @@ edition = "2018"
 name = "gateio"
 path = "src/lib.rs"
 
-[features]
-h1_client = ["http-client/h1_client"]
-hyper_client = ["http-client/hyper_client"]
-curl_client = ["http-client/curl_client"]
-native_client = ["http-client/native_client"]
-
 [dependencies]
-http-client = "^6.3.5"
-thiserror = "^1.0.24"
-serde = "^1.0.125"
-serde_json = "^1.0.64"
-serde_with = "^1.8.1"
-hex = { version = "^0.4.3", features = ["serde"] }
-hmac = "^0.11.0"
-sha2 = "^0.9.3"
-urldecode = "^0.1.1"
-typed-builder = "^0.9.0"
+reqwest = { version = "0.11.0", features = ["json"] }
+thiserror = "1.0.0"
+serde = "1.0.0"
+serde_json = "1.0.0"
+serde_with = "1.0.0"
+hex = { version = "0.4.0", features = ["serde"] }
+hmac = "0.11.0"
+sha2 = "0.9.0"
+urldecode = "0.1.0"
+typed-builder = "0.9.0"
 
 [dev-dependencies]
-http-client = { version = "6.3.5", features = ["hyper_client"] }
-tokio = { version = "1.5.0", features = ["rt", "macros", "rt-multi-thread"] }
+tokio = { version = "1.0.0", features = ["rt", "macros", "rt-multi-thread"] }
 tokio-compat-02 = "0.2.0"

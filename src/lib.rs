@@ -12,23 +12,29 @@ pub mod model;
 #[macro_use]
 pub(crate) mod util;
 pub use error::Error;
-pub use http_client;
 mod error;
 
 use std::sync::Arc;
 
-use http_client::HttpClient;
+use reqwest::Client;
 use model::ApiKey;
 
 #[derive(Clone)]
-pub struct GateIO<C: HttpClient> {
-    client: Arc<C>,
+pub struct GateIO {
+    pub(crate) client: Arc<Client>,
 
     pub key: Option<ApiKey>
 }
 
-impl<C: HttpClient> GateIO<C> {
-    pub fn new(client: Arc<C>, key: Option<ApiKey>) -> Self {
+impl GateIO {
+    pub fn new(key: Option<ApiKey>) -> Self {
+        Self {
+            client: Arc::new(Client::new()),
+            key
+        }
+    }
+
+    pub fn with_client(client: Arc<Client>, key: Option<ApiKey>) -> Self {
         Self {
             client,
             key

@@ -1,20 +1,19 @@
 use crate::{Error, GateIO, model::*, util::*};
-use http_client::http_types::Url;
-use http_client::{HttpClient, Request};
 use crate::set_query;
+use reqwest::Url;
 
-impl<C: HttpClient> GateIO<C> {
+impl GateIO {
     pub async fn spot_accounts(&self, currency: Option<&str>) -> Result<Vec<SpotAccount>, Error> {
         let mut url = Url::parse(&format!("{}/spot/accounts", API_URL)).unwrap();
         set_query!(url, currency);
+        let req = self.client.get(url).build()?;
         
-        send_signed(self, Request::get(url)).await
+        send_signed(self, req).await
     }
 
     pub async fn place_order(&self, order: OrderRequest) -> Result<Order, Error> {
-        let mut req = Request::post(Url::parse(&format!("{}/spot/orders", API_URL)).unwrap());
-        req.set_body(serde_json::to_string(&order).unwrap());
+        let req = self.client.post(format!("{}/spot/orders", API_URL)).json(&order);
 
-        send_signed(self, req).await
+        send_signed(self, req.build()?).await
     }
 }

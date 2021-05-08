@@ -1,19 +1,15 @@
 #[cfg(test)]
 mod tests {
-    use http_client::hyper::HyperClient;
     // use gateio::spot::market::list_currencies;
     use tokio_compat_02::FutureExt;
-    use std::sync::Arc;
     use serde_json::from_str;
 
-    fn unauthenticated() -> gateio::GateIO<HyperClient> {
-        let client = http_client::hyper::HyperClient::new();
-        gateio::GateIO::new(Arc::new(client), None)
+    fn unauthenticated() -> gateio::GateIO {
+        gateio::GateIO::new(None)
     }
 
-    fn authenticated() -> gateio::GateIO<HyperClient> {
-        let client = http_client::hyper::HyperClient::new();
-        gateio::GateIO::new(Arc::new(client), Some(from_str(include_str!("../api_key.json")).unwrap()))
+    fn authenticated() -> gateio::GateIO {
+        gateio::GateIO::new(Some(from_str(include_str!("../api_key.json")).unwrap()))
     }
 
     #[tokio::test]

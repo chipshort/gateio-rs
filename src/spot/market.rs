@@ -1,12 +1,11 @@
 use crate::{model::*, set_query, util::*, Error, GateIO};
-use http_client::http_types::Url;
-use http_client::{HttpClient, Request};
+use reqwest::Url;
 use serde_json::Value;
 
-impl<C: HttpClient> GateIO<C> {
+impl GateIO {
     pub async fn list_currencies(&self) -> Result<Vec<Currency>, Error> {
-        let req = Request::get(Url::parse(&format!("{}/spot/currencies", API_URL)).unwrap());
-        send_request(self, req).await
+        let req = self.client.get(format!("{}/spot/currencies", API_URL));
+        send_request(self, req.build()?).await
     }
 
     pub async fn candlesticks(
@@ -19,9 +18,9 @@ impl<C: HttpClient> GateIO<C> {
     ) -> Result<Vec<Candlestick>, Error> {
         let mut url = Url::parse(&format!("{}/spot/candlesticks", API_URL)).unwrap();
         set_query!(url, currency_pair, limit, from, to, interval);
+        let req = self.client.get(url).build()?;
 
-        let candlesticks: Result<Vec<Vec<Value>>, Error> =
-            send_request(self, Request::get(url)).await;
+        let candlesticks: Result<Vec<Vec<Value>>, Error> = send_request(self, req).await;
 
         let conversions: Result<Vec<Candlestick>, _> = candlesticks?
             .iter()
@@ -49,7 +48,7 @@ impl<C: HttpClient> GateIO<C> {
         let mut url = Url::parse(&format!("{}/spot/order_book", API_URL)).unwrap();
         set_query!(url, currency_pair, interval, limit, with_id);
 
-        let book: Value = send_request(self, Request::get(url)).await?;
+        let book: Value = send_request(self, self.client.get(url).build()?).await?;
 
         println!("{}", book);
 
@@ -66,12 +65,14 @@ impl<C: HttpClient> GateIO<C> {
 fn convert_orderbook_entries(value: &Value) -> Result<Vec<OrderbookEntry>, Error> {
     let entries = value.as_array().ok_or(Error::ParseError)?;
 
-    let conversions: Result<Vec<OrderbookEntry>, _> =
-        entries.iter().map(|v| -> Result<OrderbookEntry, Error> {
+    let conversions: Result<Vec<OrderbookEntry>, _> = entries
+        .iter()
+        .map(|v| -> Result<OrderbookEntry, Error> {
             Ok(OrderbookEntry {
                 price: parse_from_str(&v[0])?,
                 amount: parse_from_str(&v[1])?,
             })
-        }).collect();
+        })
+        .collect();
     conversions
 }

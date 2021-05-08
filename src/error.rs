@@ -6,7 +6,7 @@ use serde::Deserialize;
 #[derive(Error, Debug)]
 pub enum Error {
     #[error("http error {0}")]
-    Http(http_client::Error),
+    Http(reqwest::Error),
 
     #[error("{0}")]
     GateIO(GateIOError),
@@ -36,8 +36,14 @@ impl Display for GateIOError {
     }
 }
 
-impl From<http_client::Error> for Error {
-    fn from(e: http_client::Error) -> Self {
+impl From<reqwest::Error> for Error {
+    fn from(e: reqwest::Error) -> Self {
         Self::Http(e)
+    }
+}
+
+impl From<reqwest::header::InvalidHeaderValue> for Error {
+    fn from(_: reqwest::header::InvalidHeaderValue) -> Self {
+        Self::Unknown
     }
 }

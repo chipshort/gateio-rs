@@ -20,7 +20,7 @@ async fn main() -> Result<(), gateio::Error> {
 
 async fn currencies(unauthenticated: &GateIO) -> () {
     let currencies = unauthenticated.list_currencies().compat().await;
-    println!("{:?}", currencies);
+    println!("{:#?}", currencies);
 }
 
 async fn candlesticks(unauthenticated: &GateIO) -> () {
@@ -34,7 +34,7 @@ async fn candlesticks(unauthenticated: &GateIO) -> () {
         )
         .compat()
         .await;
-    println!("{:?}", candlesticks);
+    println!("{:#?}", candlesticks);
 }
 
 async fn orderbook(unauthenticated: &GateIO) -> () {
@@ -42,12 +42,12 @@ async fn orderbook(unauthenticated: &GateIO) -> () {
         .order_book("BTC_USDT", None, None, None)
         .compat()
         .await;
-    println!("{:?}", orderbook);
+    println!("{:#?}", orderbook);
 }
 
 async fn accounts(authenticated: &GateIO) -> () {
     let accounts = authenticated.spot_accounts(None).compat().await;
-    println!("{:?}", accounts);
+    println!("{:#?}", accounts);
 }
 
 async fn place_order(authenticated: &GateIO) -> () {
@@ -62,5 +62,5 @@ async fn place_order(authenticated: &GateIO) -> () {
         )
         .compat()
         .await;
-    println!("{:?}", order);
+    println!("{:#?}", order);
 }

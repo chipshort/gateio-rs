@@ -26,14 +26,14 @@ pub struct OrderRequest {
     #[builder(default, setter(strip_option))]
     pub order_type: Option<String>,
     #[builder(default, setter(strip_option))]
-    pub account: Option<String>,
+    pub account: Option<AccountType>,
     pub side: OrderSide,
     #[builder(default, setter(strip_option))]
     pub iceberg: Option<f64>,
     pub amount: f64,
     pub price: f64,
     #[builder(default, setter(strip_option))]
-    pub time_in_force: Option<String>,
+    pub time_in_force: Option<TimeInForce>,
     #[builder(default, setter(strip_option))]
     pub auto_borrow: Option<bool>
 }
@@ -49,7 +49,7 @@ pub struct Order {
     pub status: String,
     #[serde(rename="type")]
     pub order_type: String,
-    pub account: String,
+    pub account: AccountType,
     pub side: String,
     #[serde_as(as = "DisplayFromStr")]
     pub iceberg: f64,
@@ -57,7 +57,7 @@ pub struct Order {
     pub amount: f64,
     #[serde_as(as = "DisplayFromStr")]
     pub price: f64,
-    pub time_in_force: String,
+    pub time_in_force: TimeInForce,
     #[serde_as(as = "DisplayFromStr")]
     pub left: f64,
     #[serde_as(as = "DisplayFromStr")]
@@ -152,11 +152,16 @@ pub enum OrderSide {
     Buy,
     Sell
 }
-impl Display for OrderSide {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            OrderSide::Buy => write!(f, "buy"),
-            OrderSide::Sell => write!(f, "sell")
-        }
-    }
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "lowercase")]
+pub enum AccountType {
+    Spot,
+    Margin
+}
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "lowercase")]
+pub enum TimeInForce {
+    GTC,
+    IOC,
+    POC
 }

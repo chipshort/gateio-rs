@@ -1,7 +1,6 @@
 use gateio::model::{OrderRequest, OrderSide};
 use gateio::GateIO;
 use serde_json::from_str;
-use tokio_compat_02::FutureExt;
 
 #[tokio::main]
 async fn main() -> Result<(), gateio::Error> {
@@ -19,7 +18,7 @@ async fn main() -> Result<(), gateio::Error> {
 }
 
 async fn currencies(unauthenticated: &GateIO) -> () {
-    let currencies = unauthenticated.list_currencies().compat().await;
+    let currencies = unauthenticated.list_currencies().await;
     println!("{:#?}", currencies);
 }
 
@@ -32,7 +31,6 @@ async fn candlesticks(unauthenticated: &GateIO) -> () {
             None,
             Some(gateio::model::Interval::OneMin),
         )
-        .compat()
         .await;
     println!("{:#?}", candlesticks);
 }
@@ -40,13 +38,12 @@ async fn candlesticks(unauthenticated: &GateIO) -> () {
 async fn orderbook(unauthenticated: &GateIO) -> () {
     let orderbook = unauthenticated
         .order_book("BTC_USDT", None, None, None)
-        .compat()
         .await;
     println!("{:#?}", orderbook);
 }
 
 async fn accounts(authenticated: &GateIO) -> () {
-    let accounts = authenticated.spot_accounts(None).compat().await;
+    let accounts = authenticated.spot_accounts(None).await;
     println!("{:#?}", accounts);
 }
 
@@ -60,7 +57,6 @@ async fn place_order(authenticated: &GateIO) -> () {
                 .price(1f64)
                 .build(),
         )
-        .compat()
         .await;
     println!("{:#?}", order);
 }

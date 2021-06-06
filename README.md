@@ -14,5 +14,11 @@ Add this to your Cargo.toml
 gateio = { git = "https://github.com/chipshort/gateio-rs.git" }
 ```
 
-To run the unit tests, provide your `apiKey` and `secretKey` inside `api_key.json`.
+To run the unit tests, provide your `apiKey` and `secretKey` inside `api_key.json` like this format:
+```json
+{
+    "apiKey": "KEY",
+    "secretKey": "SECRET"
+}
+```
 The unit tests do not place any orders.

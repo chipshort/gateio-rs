@@ -1,7 +1,4 @@
-use crate::{
-    model::{Interval, OrderSide},
-    Error, GateIO,
-};
+use crate::{Error, GateIO, model::{Chain, Interval, OrderSide}};
 use hmac::{Hmac, Mac, NewMac};
 use reqwest::{header::HeaderValue, Request};
 use serde::de::DeserializeOwned;
@@ -21,6 +18,7 @@ impl ToStrMarker for &str {}
 impl ToStrMarker for bool {}
 impl ToStrMarker for Interval {}
 impl ToStrMarker for OrderSide {}
+impl ToStrMarker for Chain {}
 
 pub(crate) trait ToOptionString {
     fn to_opt(&self) -> Option<String>;
@@ -78,7 +76,8 @@ pub async fn send_request<T: DeserializeOwned>(
     let response = gateio.client.execute(req).await?;
 
     if response.status().is_success() {
-        // println!("{:?}", response.body_string().await);
+        // println!("{}", response.text().await?);
+        // Err(Error::Unknown)
         Ok(response.json().await?)
     } else {
         Err(Error::GateIO(response.json().await?))

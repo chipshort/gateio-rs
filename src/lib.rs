@@ -9,6 +9,8 @@
 
 pub mod spot;
 pub mod model;
+pub mod wallet;
+pub mod withdrawal;
 #[macro_use]
 pub(crate) mod util;
 pub use error::Error;

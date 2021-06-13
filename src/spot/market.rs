@@ -50,8 +50,6 @@ impl GateIO {
 
         let book: Value = send_request(self, self.client.get(url).build()?).await?;
 
-        println!("{}", book);
-
         let conversion = Orderbook {
             id: book.get("id").map(|v| v.as_i64()).flatten(),
             asks: convert_orderbook_entries(&book["asks"])?,

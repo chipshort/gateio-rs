@@ -1,3 +1,4 @@
+use rust_decimal::Decimal;
 use gateio::model::{OrderRequest, OrderSide};
 use gateio::GateIO;
 use serde_json::from_str;
@@ -53,8 +54,8 @@ async fn place_order(authenticated: &GateIO) -> () {
             OrderRequest::builder()
                 .currency_pair("BTC_USDT".into())
                 .side(OrderSide::Buy)
-                .amount(1f64)
-                .price(1f64)
+                .amount(1.into())
+                .price(1.into())
                 .build(),
         )
         .await;

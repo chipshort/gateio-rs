@@ -1,7 +1,8 @@
 use std::fmt::Display;
 
+use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
-use serde_with::{serde_as, skip_serializing_none, DisplayFromStr};
+use serde_with::skip_serializing_none;
 use typed_builder::TypedBuilder;
 
 pub static API_URL: &'static str = "https://api.gateio.ws/api/v4";
@@ -29,16 +30,15 @@ pub struct OrderRequest {
     pub account: Option<AccountType>,
     pub side: OrderSide,
     #[builder(default, setter(strip_option))]
-    pub iceberg: Option<f64>,
-    pub amount: f64,
-    pub price: f64,
+    pub iceberg: Option<Decimal>,
+    pub amount: Decimal,
+    pub price: Decimal,
     #[builder(default, setter(strip_option))]
     pub time_in_force: Option<TimeInForce>,
     #[builder(default, setter(strip_option))]
     pub auto_borrow: Option<bool>,
 }
 
-#[serde_as]
 #[derive(Deserialize, Debug)]
 pub struct Order {
     pub id: String,
@@ -51,48 +51,47 @@ pub struct Order {
     pub order_type: String,
     pub account: AccountType,
     pub side: String,
-    #[serde_as(as = "DisplayFromStr")]
-    pub iceberg: f64,
-    #[serde_as(as = "DisplayFromStr")]
-    pub amount: f64,
-    #[serde_as(as = "DisplayFromStr")]
-    pub price: f64,
+    #[serde(with = "rust_decimal::serde::str")]
+    pub iceberg: Decimal,
+    #[serde(with = "rust_decimal::serde::str")]
+    pub amount: Decimal,
+    #[serde(with = "rust_decimal::serde::str")]
+    pub price: Decimal,
     pub time_in_force: TimeInForce,
-    #[serde_as(as = "DisplayFromStr")]
-    pub left: f64,
-    #[serde_as(as = "DisplayFromStr")]
-    pub filled_total: f64,
-    #[serde_as(as = "DisplayFromStr")]
-    pub fee: f64,
+    #[serde(with = "rust_decimal::serde::str")]
+    pub left: Decimal,
+    #[serde(with = "rust_decimal::serde::str")]
+    pub filled_total: Decimal,
+    #[serde(with = "rust_decimal::serde::str")]
+    pub fee: Decimal,
     pub fee_currency: String,
-    #[serde_as(as = "DisplayFromStr")]
-    pub point_fee: f64,
-    #[serde_as(as = "DisplayFromStr")]
-    pub gt_fee: f64,
+    #[serde(with = "rust_decimal::serde::str")]
+    pub point_fee: Decimal,
+    #[serde(with = "rust_decimal::serde::str")]
+    pub gt_fee: Decimal,
     pub gt_discount: bool,
-    #[serde_as(as = "DisplayFromStr")]
-    pub rebated_fee: f64,
+    #[serde(with = "rust_decimal::serde::str")]
+    pub rebated_fee: Decimal,
     pub rebated_fee_currency: String,
 }
 
-#[serde_as]
 #[derive(Deserialize, Debug)]
 pub struct SpotAccount {
     pub currency: String,
-    #[serde_as(as = "DisplayFromStr")]
-    pub available: f64,
-    #[serde_as(as = "DisplayFromStr")]
-    pub locked: f64,
+    #[serde(with = "rust_decimal::serde::str")]
+    pub available: Decimal,
+    #[serde(with = "rust_decimal::serde::str")]
+    pub locked: Decimal,
 }
 
 #[derive(Debug)]
 pub struct Candlestick {
     pub timestamp: u64,
-    pub trading_volume: f64,
-    pub close_price: f64,
-    pub highest_price: f64,
-    pub lowest_price: f64,
-    pub open_price: f64,
+    pub trading_volume: Decimal,
+    pub close_price: Decimal,
+    pub highest_price: Decimal,
+    pub lowest_price: Decimal,
+    pub open_price: Decimal,
 }
 
 #[derive(Debug)]
@@ -104,8 +103,8 @@ pub struct Orderbook {
 
 #[derive(Debug)]
 pub struct OrderbookEntry {
-    pub price: f64,
-    pub amount: f64,
+    pub price: String,
+    pub amount: String,
 }
 
 #[derive(Deserialize, Debug)]
@@ -167,6 +166,7 @@ pub enum Interval {
     OneDay,
     SevenDay,
 }
+
 impl Display for Interval {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
@@ -190,12 +190,14 @@ pub enum OrderSide {
     Buy,
     Sell,
 }
+
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "lowercase")]
 pub enum AccountType {
     Spot,
     Margin,
 }
+
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "lowercase")]
 pub enum TimeInForce {
